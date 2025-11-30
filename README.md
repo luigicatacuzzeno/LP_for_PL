@@ -4,7 +4,9 @@ C code and Windows binary for the LP method described in the Ms "An approach bas
 
 		Linear Programming Method
 Software to find unknown parameters in a system of differential equation, and then numerically solve the system.
+
 0 - download all the files and unzip in a folder
+
 1 - in the folder you will find 
 	a. a text file named "model.txt"  that is used to input information on the L-P model
 	b. an executable named "LPmethod.exe" that process "model.txt" and gives back the result
