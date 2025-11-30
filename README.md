@@ -20,4 +20,4 @@ NB   	Compilation of "LPmethod.exe" uses the glpk library that needs to be inclu
 
 5 - If your system has no unknown parameters, a text file "output.txt" should additionally appear reporting the solution of the system of differential equations (the first column is time and in the following columns are the variables in your system)
 
-Good luck!
+Good luck!  
