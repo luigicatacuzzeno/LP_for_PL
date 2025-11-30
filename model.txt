@@ -1,0 +1,123 @@
+######################################## LP method ##############################
+# This is a text file that will serve as input for the LPmethod.exe software, that
+# assess the minimum and maximum value of each free parameter allowing the solution 
+# of a system of differential equations at steady-state. The input required is: 
+#	1) parameters present in the equations and having a known value; 
+#	2) free parameters, present in the equations and whose value, unknown, needs
+#		to be assessed with the LPmethod; 
+#	3) Intermediate relationships defining quantity present in the equations 
+#	in terms of the parameters or other intermediate equations 
+#	4) system of differential equations
+#	5) initial condition for each variable of the system
+# Save this file as "model.txt" on the same folder containing LPmethod.exe. Then 
+# double click on LPmethod.exe. A new file named "results.txt" will appear in the 
+# folder, reporting the Input read from "model.txt" and the result of the 
+# computation, in terms of minimum and maximum value that each free parameter can 
+# have.
+# if no free parameter is present, the LPmethod.exe softwar will solve the system of
+# differential equation with the Runge-Kutta algorithm
+#
+
+####################################################################################
+################################ Parameters with known value #######################
+# needs to be written as "par=value"
+# the value can also be in scientific notation (es 1e-2 for 0.01)
+# In the exemple show, perameters include Cext and Anex, extracellular impermeable 
+# anions and cations useful to simulate a reduction in the extracellular Na or Cl by 
+# mantaining unchanged the extracellular osmolarity
+
+R=8.31
+T=298.0
+F=96485.0
+Cm=28.3e-12
+Naex=0.145
+Kex=0.005
+Clex=0.15
+nA=7.06e-13
+kp=0.0098
+gNa=1.778e-8
+gK=3.752e-9
+gCl=4.523e-9
+#Qp=1.225369e-014
+#QNaK2Cl=1.889171e-011
+#QKCl=1.491585e-014
+Pw=2.14e-16
+#V=-0.045
+Catex=0.0
+Anex=0.0
+
+####################################### free Parameters ##############################
+# parameters whose value is unknown and you whish to determine with the LP method
+
+free Qp
+free QNaK2Cl
+free QKCl
+#free Pw
+#free gCl
+#free gK
+#free gNa
+
+########################### Intermediate Expressions ################################
+# defined as "int=expression"
+# definition of quantities present in the equations. 
+# An intermediate extression may contain another intermediate expression in its definition 
+
+ENa=(R*T/F)*ln(Naex/Na)
+ECl=(R*T/F)*ln(Cl/Clex)
+EK=(R*T/F)*ln(Kex/K)
+INa=gNa*Na*(V-ENa)
+IK=gK*K*(V-EK)
+ICl=gCl*Cl*(V-ECl)
+Jp=Qp/(1.0+(kp/Na)*(kp/Na)*(kp/Na))
+JNaK2Cl=QNaK2Cl*(Na*K*Cl*Cl-Naex*Kex*Clex*Clex)
+JKCl=QKCl*(K*Cl-Kex*Clex)
+Piin=Na+K+Cl+A
+Piex=Naex+Kex+Clex+Catex+Anex
+Na=nNa/(Vol*1e3)
+K=nK/(Vol*1e3)
+Cl=nCl/(Vol*1e3)
+A=nA/(Vol*1e3)
+
+#notice: one all parameters are known, in order to performe the simulation enable this equation and disable the dV/dt diff equation
+#V=(gK*K*EK+gNa*Na*ENa+gCl*Cl*ECl-F*Jp)/(gK*K+gNa*Na+gCl*Cl)
+
+########################### Differential Equations  and nitial Conditions ################
+# a differential equation needs to be written as dx/dt=f(x)
+#  initial condition for each differential equation defined
+# NB differential equns and initial conditions need to be presented in the same order (i.e
+# if the first diff equation is dNa/dt, the first initial condition is Na(0), and so on)
+# An initial condition may contain expressions with parameters inside
+
+dnNa/dt=-INa/F-3.0*Jp-JNaK2Cl
+nNa(0)=0.01*(14.13e-15)*1e3
+
+dnK/dt=-IK/F+2.0*Jp-JNaK2Cl-JKCl
+nK(0)=0.14*(14.13e-15)*1e3
+
+dnCl/dt=ICl/F-2.0*JNaK2Cl-JKCl
+nCl(0)=0.1*(14.13e-15)*1e3
+
+dV/dt=-(INa+IK+ICl+F*Jp)/Cm
+V(0)=-0.04
+
+dVol/dt=Pw*(Piin-Piex)
+Vol(0)=14.13e-15
+
+################################# options #############################################
+# some option usefull internally
+# t0 -> starting time for the simulation 
+# t1 -> end time for the simulation
+# dt -> timestep in the Runge Kutta differential equation solver
+# tshow -> timestep used in the "output.txt" report file
+# tolerance used by the LP solver
+# NB if options are not defined, they will assume their default value
+
+opt t0=0.0
+opt t1=10000.0
+opt dt = 1.0
+opt tshow=10.0
+opt LP_tolerance=1e-18
+
+
+
+
